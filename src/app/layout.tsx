@@ -26,6 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}
+        style={{ backgroundImage: `url('/gradii-1920x1080.png')` }}
       >
         {children}
       </body>

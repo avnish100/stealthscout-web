@@ -81,25 +81,6 @@ export function SignUpForm({
     setLoading(false);
   };
 
-  const handleGoogleSignUp = async () => {
-    setLoading(true);
-    setError(null);
-    // Note: Google Sign up uses the same method as Google Login
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-        // You can add scopes if needed, e.g., 'profile email'
-      },
-    });
-
-    if (error) {
-      console.error("Google sign up error:", error);
-      setError(error.message);
-      setLoading(false);
-    }
-    // Redirect happens via Supabase
-  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -168,16 +149,8 @@ export function SignUpForm({
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Creating Account..." : "Create Account"}
               </Button>
-              {/* Use the handleGoogleSignUp function */}
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={handleGoogleSignUp} // Changed to onClick
-                type="button" // Prevent form submission
-                disabled={loading}
-              >
-                 {loading ? "Redirecting..." : "Sign up with Google"}
-              </Button>
+                 {loading ? "Redirecting..." : ""}
+              
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}

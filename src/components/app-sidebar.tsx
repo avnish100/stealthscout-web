@@ -29,13 +29,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
 
 const data = {
-  user: {
-    name: "John Smith",
-    email: "john@vc.com",
-    avatar: "/avatars/john.jpg",
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -79,7 +76,7 @@ const data = {
         },
         {
           title: "Serial Founders",
-          url: "/founders/serial",
+          url: "/founders/repeat-founders",
         },
       ],
     },
@@ -102,39 +99,41 @@ const data = {
         },
       ],
     },
-  ],
-  navSecondary: [
-    {
-      title: "Documentation",
-      url: "/docs",
-      icon: BookMarked,
-    },
-    {
-      title: "Notifications",
-      url: "/notifications",
-      icon: Bell,
-    },
-    {
-      title: "Feedback",
-      url: "/feedback",
-      icon: Send,
-    },
-  ],
-  projects: [
-    {
-      name: "Saved Searches",
-      url: "/saved",
-      icon: Star,
-    },
-    {
-      name: "Deal Flow",
-      url: "/deals",
-      icon: Briefcase,
-    },
-  ],
+  ]
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const supabase = createClient(); 
+  const [user,setUser] = useState<{
+    name: string | null
+    email: string | null
+    avatar: string | null
+  }|null>(null);
+  
+  useEffect(() => {
+    const fetchUser = async()=> {
+      const { data: { user: supabaseUser } } = await supabase.auth.getUser()
+      
+      if (supabaseUser) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', supabaseUser.id)
+          .single()
+
+          console.log('profile', profile)
+
+        setUser({
+          name: profile?.full_name || 'User',
+          email: supabaseUser.email || '',
+          avatar: null
+        })
+      }
+    }
+
+    fetchUser()
+  }, [supabase])
+
   return (
     <Sidebar
       className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
@@ -159,11 +158,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {/* <NavProjects projects={data.projects} />
+        <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {user && <NavUser user={user as { name: string; email: string; avatar: string }} />}
       </SidebarFooter>
     </Sidebar>
   )

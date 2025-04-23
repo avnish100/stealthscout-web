@@ -1,7 +1,6 @@
-// Add this import at the top
-"use client" // This should already be there
+"use client" 
 
-import { useRouter } from 'next/navigation'; // Import useRouter for redirection
+import { useRouter } from 'next/navigation'; 
 import {
   BadgeCheck,
   Bell,
@@ -31,6 +30,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { useState } from 'react';
 
 // --- Authentication Library Check (Important!) ---
 // If you are using an authentication library like NextAuth.js, Clerk, Supabase Auth, Auth0 etc.,
@@ -53,13 +53,12 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const router = useRouter(); // Initialize the router
-
   // --- Define the Logout Handler ---
   const handleLogout = async () => {
     try {
       // 1. Call your backend logout endpoint
       // Replace '/api/auth/logout' with your actual logout API route
-      const response = await fetch('a/auth/logout', {
+      const response = await fetch('/auth/logout', {
         method: 'POST', // Or GET, depending on your API design
         headers: {
           'Content-Type': 'application/json',
@@ -88,6 +87,9 @@ export function NavUser({
   };
   // -------------------------------------
 
+  const handleAccountClick = () => {
+    router.push('account/settings');
+  };
 
   return (
     <SidebarMenu>
@@ -101,7 +103,9 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {(user.name.split(' ')[0]?.[0] + (user.name.split(' ').slice(-1)[0]?.[0] || '')).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
@@ -121,7 +125,9 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {(user.name.split(' ')[0]?.[0] + (user.name.split(' ').slice(-1)[0]?.[0] || '')).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
@@ -138,7 +144,7 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onSelect={handleAccountClick}>
                  <BadgeCheck className="mr-2 h-4 w-4" /> {/* Added spacing */}
                 Account
               </DropdownMenuItem>

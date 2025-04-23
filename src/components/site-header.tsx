@@ -20,7 +20,11 @@ const routeConfig: Record<string, { title: string, parent?: string }> = {
   "/dashboard": { title: "Dashboard" },
   "/talent": { title: "Talent", parent: "Talent Intelligence" },
   "/companies": { title: "Companies", parent: "Talent Intelligence" },
-  "/talent/search": {title:"Talent Search", parent: "Talent Intelligence"}
+  "/talent/search": {title:"Talent Search", parent: "Talent Intelligence"},
+  "/founders": { title: "Founders"},
+  "/founders/repeat-founders": { title: "Serial Founders", parent: "Founders" },
+  "/account/settings": { title: "Account Settings", parent: "Account" },
+  "/account": { title: "Account" },
   // Add more routes as needed
 }
 
@@ -60,20 +64,6 @@ export function SiteHeader() {
           </BreadcrumbList>
         </Breadcrumb>
         
-        <div className="ml-auto flex items-center gap-2">
-          <SearchForm 
-            className="w-full sm:w-[300px]" 
-            placeholder="Search talent, companies, or signals..."
-          />
-          <Button variant="outline" size="sm" className="hidden sm:flex gap-2">
-            <Filter className="h-4 w-4" />
-            Filters
-          </Button>
-          <Button variant="outline" size="sm" className="hidden sm:flex gap-2">
-            <Download className="h-4 w-4" />
-            Export
-          </Button>
-        </div>
       </div>
     </header>
   )

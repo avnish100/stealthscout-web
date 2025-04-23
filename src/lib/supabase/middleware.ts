@@ -60,7 +60,12 @@ export async function updateSession(request: NextRequest) {
     if (request.nextUrl.pathname.startsWith('/dashboard') && user.error) {
         return NextResponse.redirect(new URL('/auth/signin', request.url))
     }
+    const isAuthenticated = !!user; // Check if getUser returned a valid user
 
+    // Redirect authenticated users from home page to dashboard
+    if (isAuthenticated && request.nextUrl.pathname === '/') {
+        return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
 
     return response
 }

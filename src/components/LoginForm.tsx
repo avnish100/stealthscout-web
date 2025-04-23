@@ -49,25 +49,6 @@ export function LoginForm({
     setLoading(false);
   };
 
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    setError(null);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        // Ensure this matches the redirect URI configured in Supabase & Google Cloud Console
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-
-    if (error) {
-      console.error("Google login error:", error);
-      setError(error.message);
-      setLoading(false);
-    }
-    // No need to setLoading(false) here as the page will redirect
-  };
-
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -97,7 +78,7 @@ export function LoginForm({
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                   <a
-                    href="#" // TODO: Implement forgot password flow
+                    href="/auth/forgot-password"
                     className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                   >
                     Forgot your password?
@@ -120,15 +101,7 @@ export function LoginForm({
                 {loading ? "Logging in..." : "Login"}
               </Button>
               {/* Use the handleGoogleLogin function */}
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={handleGoogleLogin} // Changed to onClick
-                type="button" // Prevent form submission
-                disabled={loading}
-              >
-                {loading ? "Redirecting..." : "Login with Google"}
-              </Button>
+
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}

@@ -8,7 +8,7 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="[--header-height:calc(theme(spacing.14))]">
+    <div className="[--header-height:calc(theme(spacing.14))]" style={{ backgroundImage: `url('/gradii-1920x1080.png')` }}>
       <SidebarProvider className="flex flex-col">
         <SiteHeader />
         <div className="flex flex-1">

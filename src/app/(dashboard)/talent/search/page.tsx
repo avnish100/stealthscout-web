@@ -17,6 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner"; // Using sonner for toast notifications
+import { formatTimeAgo } from "@/utils/formatting";
 
 
 // --- Interfaces ---
@@ -52,12 +53,8 @@ interface TalentProfile {
     role?: string;    // Added based on original example's profile card display
 }
 
-// --- Supabase Client Initialization ---
-
-
 const supabase = createClient()
 
-// --- Helper Functions ---
 
 /**
  * Parses duration string into total months.
@@ -69,7 +66,7 @@ function parseDuration(durationString: string | null | undefined): number {
         const yearMatch = durationString.match(/(\d+)\s+yr(s)?/);
         if (yearMatch) totalMonths += parseInt(yearMatch[1], 10) * 12;
         const monthMatch = durationString.match(/(\d+)\s+mo(s)?/);
-        if (monthMatch) totalMonths += parseInt(monthMatch[1], 10);
+        if (monthMatch && yearMatch) totalMonths += parseInt(yearMatch[1], 10);
         return totalMonths;
     } catch (e) {
         console.error("Error parsing duration:", durationString, e);
@@ -77,35 +74,6 @@ function parseDuration(durationString: string | null | undefined): number {
     }
 }
 
-/**
- * Formats an ISO date string into a "time ago" string.
- */
-function formatTimeAgo(dateString: string | null | undefined): string {
-    if (!dateString) return "unknown";
-    try {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffMs = now.getTime() - date.getTime();
-        const diffSeconds = Math.floor(diffMs / 1000);
-        const diffMinutes = Math.floor(diffSeconds / 60);
-        const diffHours = Math.floor(diffMinutes / 60);
-        const diffDays = Math.floor(diffHours / 24);
-        const diffMonths = Math.floor(diffDays / 30);
-        const diffYears = Math.floor(diffDays / 365);
-
-        if (diffYears > 0) return `${diffYears} year${diffYears > 1 ? 's' : ''} ago`;
-        if (diffMonths > 0) return `${diffMonths} month${diffMonths > 1 ? 's' : ''} ago`;
-        if (diffDays > 0) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-        if (diffHours > 0) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-        if (diffMinutes > 0) return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
-        return `just now`;
-    } catch (e) {
-        console.error("Error formatting date:", dateString, e);
-        return "invalid date";
-    }
-}
-
-// --- Main Component ---
 export default function TalentSearchPage() {
     // --- State Variables ---
     const [selectedCompanies, setSelectedCompanies] = useState<string[]>([]);
@@ -116,9 +84,7 @@ export default function TalentSearchPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
     const [companyList, setCompanyList] = useState<string[]>([]);
-    // Added state for advanced filters visibility, similar to the initial React example
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-     // Added state for text search query
     const [searchQuery, setSearchQuery] = useState("");
 
 
@@ -488,28 +454,20 @@ function ProfileCard({ profile }: ProfileCardProps) {
           </Badge>
         </div>
 
-        {/* Location */}
-        {profile.location && (
-          <div className="flex items-center text-sm text-muted-foreground">
-            <MapPin className="h-4 w-4 mr-2" />
-            {profile.location}
-          </div>
-        )}
-
         {/* Labels */}
         <div className="flex flex-wrap gap-2">
           {profile.role_at_company_searched && (
-            <Badge variant="outline" className="text-sm bg-muted/50">
+            <Badge variant="outline" className="text-xs bg-muted/50">
               {profile.role_at_company_searched}
             </Badge>
           )}
           {profile.is_senior_operator && (
-            <Badge variant="outline" className="text-sm border-blue-500 text-blue-700 bg-blue-50">
+            <Badge variant="outline" className="text-xs border-blue-500 text-blue-700 bg-blue-50">
               Senior Operator
             </Badge>
           )}
           {profile.is_repeat_founder && (
-            <Badge variant="outline" className="text-sm border-purple-500 text-purple-700 bg-purple-50">
+            <Badge variant="outline" className="text-xs border-purple-500 text-purple-700 bg-purple-50">
               Repeat Founder
             </Badge>
           )}
@@ -520,11 +478,21 @@ function ProfileCard({ profile }: ProfileCardProps) {
           {formatTimeAgo(profile.last_attempted_refresh_timestamp)}
         </div>
       )}
+      {/* Location */}
+      {profile.location && (
+          <div className="flex items-center text-sm text-muted-foreground">
+            <MapPin className="h-4 w-4 mr-2" />
+            {profile.location}
+          </div>
+        )}
       </div>
+      
 
       {/* Last Refresh Timestamp */}
       
+      
     </div>
+    
 
     {/* Center Area: Details */}
     <div className="bg-muted p-6 w-full md:flex-1">
@@ -564,18 +532,21 @@ function ProfileCard({ profile }: ProfileCardProps) {
     </div>
 
     {/* Right Area: LinkedIn Link */}
-    <div className="bg-muted/50 p-6 flex items-center justify-center w-full md:w-1/6">
-      {profile.linkedin_url && (
+    {profile.linkedin_url && (
+      <Button
+        asChild
+        className="bg-muted/50 p-6 h-full w-full md:w-1/6 text-white rounded-none hover:bg-[#0a66c2] transition-colors"
+      >
         <a
           href={profile.linkedin_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-blue-600 hover:text-blue-800 hover:underline font-medium inline-flex items-center"
+          className="flex items-center justify-center gap-2"
         >
-          LinkedIn <ExternalLink className="h-4 w-4 ml-1" />
+          LinkedIn  
         </a>
-      )}
-    </div>
+      </Button>
+    )}
   </div>
 </Card>
 

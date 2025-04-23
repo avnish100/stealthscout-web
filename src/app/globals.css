@@ -118,6 +118,11 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image: url('/public/gradii-1920x1080.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
   }
-  
 }
