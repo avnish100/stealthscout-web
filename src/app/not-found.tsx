@@ -6,19 +6,32 @@ import Link from "next/link";
 
 export default function NotFound() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+
   useEffect(() => {
+    // Set initial window size
+    setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
+
+    const handleResize = () => {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    };
     
     window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    window.addEventListener("resize", handleResize);
+    
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
   
   // Calculate subtle rotation based on mouse position
-  const rotateX = (mousePosition.y / window.innerHeight - 0.5) * 5;
-  const rotateY = (mousePosition.x / window.innerWidth - 0.5) * -5;
+  const rotateX = (mousePosition.y / windowSize.height - 0.5) * 5;
+  const rotateY = (mousePosition.x / windowSize.width - 0.5) * -5;
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center overflow-hidden">
@@ -70,7 +83,7 @@ export default function NotFound() {
         <div 
           className="absolute w-full h-full top-0 left-0 opacity-30 pointer-events-none"
           style={{
-            background: `radial-gradient(circle at ${mousePosition.x - window.innerWidth/4}px ${mousePosition.y - window.innerHeight/4}px, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%)`,
+            background: `radial-gradient(circle at ${mousePosition.x - windowSize.width/4}px ${mousePosition.y - windowSize.height/4}px, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 50%)`,
           }}
         ></div>
       </Card>
